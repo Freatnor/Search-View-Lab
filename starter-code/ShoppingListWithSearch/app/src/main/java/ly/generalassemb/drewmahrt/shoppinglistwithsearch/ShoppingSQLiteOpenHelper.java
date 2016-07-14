@@ -40,9 +40,17 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper{
                     COL_ITEM_PRICE + " REAL, " +
                     COL_ITEM_TYPE + " TEXT )";
 
+    private static ShoppingSQLiteOpenHelper instance;
 
-    public ShoppingSQLiteOpenHelper(Context context) {
+    private ShoppingSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static ShoppingSQLiteOpenHelper getInstance(Context context){
+        if(instance == null){
+            instance = new ShoppingSQLiteOpenHelper(context);
+        }
+        return instance;
     }
 
     @Override
@@ -54,6 +62,61 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + SHOPPING_LIST_TABLE_NAME);
         this.onCreate(db);
+    }
+
+    public Cursor searchShoppingList(String query){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String arg = "%"+query+"%";
+        String[] args = {arg, arg};
+
+        String[] projection = {COL_ID, COL_ITEM_NAME, COL_ITEM_TYPE};
+
+        Cursor cursor = db.query(SHOPPING_LIST_TABLE_NAME, // a. table
+                projection, // b. column names
+                COL_ITEM_NAME+" LIKE ? OR " + COL_ITEM_TYPE + " LIKE ?", // c. selections
+                args, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+        return cursor;
+    }
+
+    public Cursor searchShoppingListByName(String name){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] args = {"%"+name+"%"};
+
+        String[] projection = {COL_ID, COL_ITEM_NAME, COL_ITEM_TYPE};
+
+        Cursor cursor = db.query(SHOPPING_LIST_TABLE_NAME, // a. table
+                projection, // b. column names
+                COL_ITEM_NAME+" LIKE ?", // c. selections
+                args, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+        return cursor;
+    }
+
+    public Cursor searchShoppingListByType(String type){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] args = {"%"+type+"%"};
+
+        String[] projection = {COL_ID, COL_ITEM_NAME, COL_ITEM_TYPE};
+
+        Cursor cursor = db.query(SHOPPING_LIST_TABLE_NAME, // a. table
+                projection, // b. column names
+                COL_ITEM_TYPE + " LIKE ?", // c. selections
+                args, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+        return cursor;
     }
 
 
