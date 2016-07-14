@@ -48,7 +48,7 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper{
 
     public static ShoppingSQLiteOpenHelper getInstance(Context context){
         if(instance == null){
-            instance = new ShoppingSQLiteOpenHelper(context);
+            instance = new ShoppingSQLiteOpenHelper(context.getApplicationContext());
         }
         return instance;
     }
